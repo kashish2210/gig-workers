@@ -1,0 +1,12 @@
+Django
+djangorestframewor
+django-cors-headers
+django-environ
+requests
+numpy
+pandas
+scikit-learn
+Pillow
+whitenoise
+gunicorn
+jobli
