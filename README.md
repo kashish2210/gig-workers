@@ -495,12 +495,26 @@ We chose a web platform over a native mobile application for the following reaso
 3. **Instant deployment.** Updates ship immediately without app store review cycles, critical during a 6-week hackathon timeline.
 4. **Demo-friendly.** Judges and investors can access the product from any browser without installation.
 5. **Progressive enhancement.** The application can be wrapped as a Progressive Web App (PWA) for home screen access and offline support in Phase 3.
+## some screenshots:
+<img width="1919" height="861" alt="image" src="https://github.com/user-attachments/assets/25823d39-7dbb-4cfe-8e4b-c798a1ce7410" />
+<img width="1919" height="868" alt="image" src="https://github.com/user-attachments/assets/d24a1bf0-0f46-47ad-b920-972001a11be0" />
+<img width="945" height="845" alt="image" src="https://github.com/user-attachments/assets/08eb9781-c475-42fa-a0bd-1d56b5c4785b" />
+<img width="1307" height="649" alt="image" src="https://github.com/user-attachments/assets/f3bb2249-1139-4242-a500-8ba7614f9eb9" />
+<img width="1337" height="830" alt="image" src="https://github.com/user-attachments/assets/cc4352e4-143f-44ec-b252-baadf1800cad" />
+<img width="1918" height="860" alt="image" src="https://github.com/user-attachments/assets/a6ca7a56-68da-4338-bf17-eb007953b465" />
+<img width="692" height="784" alt="image" src="https://github.com/user-attachments/assets/f46f88cc-3d38-47d6-a046-58ddfb78fda8" />
+<img width="1919" height="861" alt="image" src="https://github.com/user-attachments/assets/8194b88f-dc49-4285-9040-9fbba88eaabb" />
+<img width="1919" height="869" alt="image" src="https://github.com/user-attachments/assets/412e89bc-3490-4114-bc7d-87fa7375f420" />
+<img width="1914" height="866" alt="image" src="https://github.com/user-attachments/assets/72b11970-9412-455a-99a4-4bf2185a45c8" />
+<img width="1899" height="864" alt="image" src="https://github.com/user-attachments/assets/b607f71f-40e8-46ec-8c04-c94d9db07d79" />
+<img width="1919" height="863" alt="image" src="https://github.com/user-attachments/assets/92350a92-cc1b-440b-921b-a972cdccb7c7" />
+
 
 ---
 
 ## Team
 
-> Guidewire DEVTrails 2026 -- Unicorn Chase
+> Guidewire DEVTrails 2026 -- Dispecables
 
 ---
 
