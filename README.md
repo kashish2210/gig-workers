@@ -8,6 +8,12 @@
 ![AI/ML](https://img.shields.io/badge/AI-Rule--Engine%20%2B%20ML-f59e0b)
 ![License](https://img.shields.io/badge/License-MIT-a3a3a3)
 
+### Submission Links
+*   **Live App:** [https://gig-workers.onrender.com/](https://gig-workers.onrender.com/)
+*   **Demo Video:** [https://youtu.be/RJyxeHbifNI](https://youtu.be/RJyxeHbifNI)
+*   **Demo Worker:** `demo_worker` / `worker123`
+*   **Admin Access:** `admin` / `admin123`
+
 ---
 
 ## Executive Summary

@@ -1,0 +1,29 @@
+# Render Blueprint for GigShield
+services:
+  - type: web
+    name: gigshield
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn gigshield.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.10.12"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: OPENWEATHER_API_KEY
+        value: "demo_key"
+      - key: AQI_API_KEY
+        value: "demo_key"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gigshield-db
+          property: connectionString
+
+databases:
+  - name: gigshield-db
+    plan: free
+    databaseName: gigshield
