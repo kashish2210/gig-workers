@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Policy {{ policy.policy_number }}{% endblock %}
+{% block page_title %}Policy Details{% endblock %}
+
+{% block content %}
+<div style="max-width:700px">
+    <div class="card mb-4 animate-in">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">{{ policy.plan.name }}</h2>
+                <p class="card-subtitle text-mono">{{ policy.policy_number }}</p>
+            </div>
+            {% if policy.status == 'active' %}
+            <span class="badge badge-success">Active</span>
+            {% elif policy.status == 'expired' %}
+            <span class="badge badge-info">Expired</span>
+            {% else %}
+            <span class="badge badge-warning">{{ policy.get_status_display }}</span>
+            {% endif %}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="flex-between"><span class="text-muted">Period</span><span>{{ policy.week_start|date:"M d, Y" }}
+                    — {{ policy.week_end|date:"M d, Y" }}</span></div>
+            <div class="flex-between"><span class="text-muted">Base Premium</span><span>₹{{
+                    policy.base_premium|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Risk Adjustment</span><span>₹{{
+                    policy.risk_adjustment|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Final Premium</span><span class="font-bold"
+                    style="font-size:1.1rem">₹{{ policy.final_premium|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Coverage</span><span class="font-bold text-accent">₹{{
+                    policy.coverage_amount|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Claims Made</span><span>{{ policy.claims_made }} / {{
+                    policy.plan.max_claim_days_per_week }}</span></div>
+            <div class="flex-between"><span class="text-muted">Total Claimed</span><span>₹{{
+                    policy.total_claimed|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Risk Score</span><span>{{
+                    policy.risk_score_at_creation|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">City/Zone</span><span>{{ policy.city_at_creation }}, {{
+                    policy.zone_at_creation }}</span></div>
+        </div>
+    </div>
+
+    {% if premium_calcs %}
+    <div class="card animate-in animate-delay-1">
+        <div class="card-header">
+            <h3 class="card-title">Premium Breakdown</h3>
+        </div>
+
+        {% with calc=premium_calcs.first %}
+        <div style="margin-bottom:16px">
+            <div class="factor-bar">
+                <span class="factor-label">City</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.city_factor 2 100 %}%;background:var(--primary-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.city_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Zone</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.zone_factor 2 100 %}%;background:var(--primary-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.zone_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Season</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.season_factor 2 100 %}%;background:var(--warning-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.season_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Vehicle</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.vehicle_factor 2 100 %}%;background:var(--info-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.vehicle_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Shift</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.shift_factor 2 100 %}%;background:var(--info-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.shift_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Experience</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.experience_factor 2 100 %}%;background:var(--accent-400)"></div>
+                </div>
+                <span class="factor-value">{{ calc.experience_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Claims History</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.historical_claims_factor 2 100 %}%;background:var(--accent-400)">
+                    </div>
+                </div>
+                <span class="factor-value">{{ calc.historical_claims_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">Weather</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.weather_forecast_factor 2 100 %}%;background:var(--warning-400)">
+                    </div>
+                </div>
+                <span class="factor-value">{{ calc.weather_forecast_factor }}</span>
+            </div>
+            <div class="factor-bar">
+                <span class="factor-label">AQI</span>
+                <div class="factor-track">
+                    <div class="factor-fill"
+                        style="width:{% widthratio calc.aqi_forecast_factor 2 100 %}%;background:var(--danger-400)">
+                    </div>
+                </div>
+                <span class="factor-value">{{ calc.aqi_forecast_factor }}</span>
+            </div>
+        </div>
+
+        <div style="font-size:0.73rem;color:var(--text-500)">
+            Model: {{ calc.model_version }} · Calculated: {{ calc.created_at|date:"M d, Y h:i A" }}
+        </div>
+        {% endwith %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

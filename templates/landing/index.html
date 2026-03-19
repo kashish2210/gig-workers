@@ -1,0 +1,499 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="GigShield — AI-powered parametric insurance protecting India's gig delivery workers from income loss.">
+    <title>GigShield — AI Insurance for India's Gig Workers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        /* ===== Landing Only ===== */
+        .l-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: rgba(9, 9, 11, 0.6);
+            backdrop-filter: blur(16px) saturate(1.6);
+            -webkit-backdrop-filter: blur(16px) saturate(1.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 200ms;
+        }
+
+        .l-nav.scrolled {
+            background: rgba(9, 9, 11, 0.92);
+        }
+
+        .l-nav .nav-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.10) 0%, transparent 65%);
+            top: -180px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 680px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: var(--r-full);
+            color: var(--primary-300);
+            font-size: 0.73rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-bottom: 20px;
+        }
+
+        .hero-pill svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.6rem);
+            font-weight: 850;
+            line-height: 1.08;
+            letter-spacing: -0.04em;
+            color: var(--text-100);
+            margin-bottom: 16px;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            background: var(--grad-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: var(--text-400);
+            max-width: 520px;
+            margin: 0 auto 28px;
+            line-height: 1.65;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 36px;
+            justify-content: center;
+            margin-top: 48px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-100);
+        }
+
+        .hero-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-500);
+            margin-top: 2px;
+        }
+
+        /* Features */
+        .features {
+            padding: 72px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -0.03em;
+            color: var(--text-100);
+            margin-bottom: 8px;
+        }
+
+        .features .sub {
+            text-align: center;
+            color: var(--text-400);
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+        }
+
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .feat-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border-1);
+            border-radius: var(--r-lg);
+            padding: 24px;
+            transition: border-color 200ms, transform 200ms;
+        }
+
+        .feat-card:hover {
+            border-color: var(--border-3);
+            transform: translateY(-2px);
+        }
+
+        .feat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--r-md);
+            display: grid;
+            place-items: center;
+            margin-bottom: 12px;
+        }
+
+        .feat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .feat-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-100);
+        }
+
+        .feat-card p {
+            color: var(--text-400);
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+
+        /* Steps */
+        .steps-section {
+            padding: 72px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .steps-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -0.03em;
+            margin-bottom: 36px;
+            color: var(--text-100);
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-600);
+            border-radius: var(--r-sm);
+            display: grid;
+            place-items: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .step-item h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: var(--text-100);
+        }
+
+        .step-item p {
+            color: var(--text-400);
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+
+        /* CTA */
+        .cta-section {
+            padding: 72px 24px;
+            text-align: center;
+        }
+
+        .cta-box {
+            max-width: 580px;
+            margin: 0 auto;
+            background: var(--surface-2);
+            border: 1px solid var(--border-1);
+            border-radius: var(--r-xl);
+            padding: 40px 32px;
+        }
+
+        .cta-box h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-100);
+            letter-spacing: -0.02em;
+        }
+
+        .cta-box p {
+            color: var(--text-400);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .l-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-1);
+            text-align: center;
+            color: var(--text-500);
+            font-size: 0.73rem;
+        }
+
+        @media(max-width:768px) {
+            .l-nav {
+                padding: 0 16px;
+            }
+
+            .hero-stats {
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .hero-stat-val {
+                font-size: 1.25rem;
+            }
+
+            .step-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Nav -->
+    <nav class="l-nav" id="lNav">
+        <div class="logo">
+            <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+            <span class="logo-text">GigShield</span>
+        </div>
+        <div class="nav-actions">
+            <a href="{% url 'login' %}" class="btn btn-secondary btn-sm" id="nav-login">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-primary btn-sm" id="nav-register">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-pill"><i data-lucide="sparkles"></i>AI-Powered Parametric Insurance</div>
+            <h1>Protect Your Earnings,<br><em>Rain or Shine</em></h1>
+            <p>India's first insurance built for gig delivery workers. Automatic weather-triggered claims, instant
+                payouts, and AI-priced weekly plans starting at ₹49.</p>
+            <div class="hero-actions">
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg" id="cta-primary">
+                    <i data-lucide="shield-plus"></i>Get Covered Now
+                </a>
+                <a href="#how-it-works" class="btn btn-secondary btn-lg" id="cta-secondary">
+                    <i data-lucide="play-circle"></i>How It Works
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-val">₹49</div>
+                    <div class="hero-stat-label">Weekly From</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-val">70%</div>
+                    <div class="hero-stat-label">Income Covered</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-val">&lt;2hr</div>
+                    <div class="hero-stat-label">Claim Processing</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-val">5+</div>
+                    <div class="hero-stat-label">Trigger Types</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <h2>Built for Delivery Partners</h2>
+        <p class="sub">Everything you need to protect your income from disruptions you can't control.</p>
+        <div class="feat-grid">
+            <div class="feat-card">
+                <div class="feat-icon card-icon-primary"><i data-lucide="brain"></i></div>
+                <h3>AI Risk Assessment</h3>
+                <p>Dynamic premiums calculated using 9+ risk factors including city, zone, season, weather forecast, and
+                    your history.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon card-icon-accent"><i data-lucide="zap"></i></div>
+                <h3>Auto-Triggered Claims</h3>
+                <p>No forms, no calls. When heavy rain or extreme heat is detected in your zone, your claim is
+                    automatically initiated.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon card-icon-info"><i data-lucide="cloud-rain"></i></div>
+                <h3>Weather & AQI Monitoring</h3>
+                <p>Real-time monitoring of 5+ disruption types: heavy rain, extreme heat, severe pollution, flooding,
+                    and cyclones.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon card-icon-warning"><i data-lucide="wallet"></i></div>
+                <h3>Weekly Plans</h3>
+                <p>Pay weekly, aligned with your earnings. No lock-ins, no penalties. Skip a week if you want.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon card-icon-danger"><i data-lucide="shield-alert"></i></div>
+                <h3>Fraud Detection</h3>
+                <p>Advanced anomaly detection catches GPS spoofing, fake weather claims, and duplicate submissions.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon card-icon-primary"><i data-lucide="banknote"></i></div>
+                <h3>Instant Payouts</h3>
+                <p>Approved claims paid directly to your UPI or bank account. Zero paperwork, money when you need it.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="steps-section" id="how-it-works">
+        <h2>How GigShield Works</h2>
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div>
+                    <h3>Sign Up in 2 Minutes</h3>
+                    <p>Create your account, pick your delivery platform (Zomato, Swiggy, Zepto…), enter your city and
+                        zone, and we build your risk profile.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div>
+                    <h3>Choose Your Weekly Plan</h3>
+                    <p>Pick from Basic, Standard, or Premium. AI calculates your personalized premium based on your
+                        location, weather patterns, and more.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div>
+                    <h3>We Monitor, You Earn</h3>
+                    <p>Our system continuously monitors weather, AQI, and disruptions in your delivery zone. You focus
+                        on deliveries — we watch the skies.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <div>
+                    <h3>Auto Claim & Instant Payout</h3>
+                    <p>When a disruption hits your zone, your claim is auto-triggered, verified against real-time data,
+                        and payout sent within minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2>Don't Let Weather Eat Your Earnings</h2>
+            <p>Join delivery partners protecting their income with GigShield. Start your first week free.</p>
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg" id="cta-bottom">
+                <i data-lucide="shield-plus"></i>Get Started — It's Free
+            </a>
+        </div>
+    </section>
+
+    <footer class="l-footer">
+        <p>© 2026 GigShield — AI-Powered Insurance for India's Gig Economy · Guidewire DEVTrails 2026</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        const nav = document.getElementById('lNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 40);
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+
+</html>

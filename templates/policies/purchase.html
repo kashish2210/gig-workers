@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Purchase Policy{% endblock %}
+{% block page_title %}Confirm Your Coverage{% endblock %}
+
+{% block content %}
+<div style="max-width:600px;">
+    <div class="card animate-in">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">🛡️ {{ plan.name }}</h2>
+                <p class="card-subtitle">Review and confirm your weekly insurance plan.</p>
+            </div>
+            <span class="badge badge-primary">{{ plan.get_tier_display }}</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
+            <div class="flex-between">
+                <span class="text-muted">Weekly Premium</span>
+                <span style="font-size:1.5rem;font-weight:800;">₹{{ calc.final_premium|floatformat:0 }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Coverage Amount</span>
+                <span class="font-bold text-accent">₹{{ calc.coverage_amount|floatformat:0 }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Income Coverage</span>
+                <span>{{ plan.daily_income_coverage_pct }}% of daily income</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Max Claim Days</span>
+                <span>{{ plan.max_claim_days_per_week }} days/week</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Processing Time</span>
+                <span>{{ plan.waiting_period_hours }} hours</span>
+            </div>
+
+            {% if calc.risk_adjustment != 0 %}
+            <div
+                style="padding:8px 12px;border-radius:var(--radius-sm);background:rgba(245,158,11,0.08);font-size:0.8rem;">
+                ℹ️ Your premium is adjusted by ₹{{ calc.risk_adjustment|floatformat:0 }} based on your risk profile
+                ({{ calc.combined_multiplier }}x multiplier). Season: {{ calc.season }}.
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="post" id="purchase-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-confirm-purchase">
+                <i data-lucide="credit-card"></i>
+                Confirm & Activate — ₹{{ calc.final_premium|floatformat:0 }}
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:12px;">
+            <a href="{% url 'plans_list' %}" style="font-size:0.875rem;color:var(--text-tertiary);">← Back to Plans</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

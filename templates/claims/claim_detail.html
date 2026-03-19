@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Claim {{ claim.claim_number }}{% endblock %}
+{% block page_title %}Claim Details{% endblock %}
+
+{% block content %}
+<div style="max-width:700px">
+    <div class="card mb-4 animate-in">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">{{ claim.get_disruption_type_display }}</h2>
+                <p class="card-subtitle text-mono">{{ claim.claim_number }}</p>
+            </div>
+            {% if claim.status == 'approved' or claim.status == 'paid' %}
+            <span class="badge badge-success" style="font-size:0.75rem;padding:5px 12px">{{ claim.get_status_display
+                }}</span>
+            {% elif claim.status == 'pending' or claim.status == 'under_review' %}
+            <span class="badge badge-warning" style="font-size:0.75rem;padding:5px 12px">{{ claim.get_status_display
+                }}</span>
+            {% elif claim.status == 'rejected' or claim.status == 'flagged' %}
+            <span class="badge badge-danger" style="font-size:0.75rem;padding:5px 12px">{{ claim.get_status_display
+                }}</span>
+            {% else %}
+            <span class="badge badge-info" style="font-size:0.75rem;padding:5px 12px">{{ claim.get_status_display
+                }}</span>
+            {% endif %}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="flex-between"><span class="text-muted">Policy</span><span class="text-mono">{{
+                    claim.policy.policy_number }}</span></div>
+            <div class="flex-between"><span class="text-muted">Claim Date</span><span>{{ claim.claim_date|date:"M d, Y"
+                    }}</span></div>
+            <div class="flex-between"><span class="text-muted">Initiation</span>
+                {% if claim.initiation_type == 'automatic' %}
+                <span class="badge badge-primary">{{ claim.get_initiation_type_display }}</span>
+                {% else %}
+                <span class="badge badge-info">{{ claim.get_initiation_type_display }}</span>
+                {% endif %}
+            </div>
+            <div class="flex-between"><span class="text-muted">City / Zone</span><span>{{ claim.claim_city }} {{
+                    claim.claim_zone }}</span></div>
+            <div class="flex-between"><span class="text-muted">Hours Lost</span><span>{{
+                    claim.estimated_hours_lost|floatformat:1 }} hrs</span></div>
+            <div class="flex-between"><span class="text-muted">Estimated Income Loss</span><span>₹{{
+                    claim.estimated_income_loss|floatformat:0 }}</span></div>
+            <div class="flex-between"><span class="text-muted">Approved Amount</span><span class="font-bold">₹{{
+                    claim.approved_amount|floatformat:0 }}</span></div>
+            <div class="flex-between" style="padding-top:8px;border-top:1px solid var(--border-1)">
+                <span class="text-muted" style="font-size:0.95rem">Payout Amount</span>
+                <span style="font-size:1.4rem;font-weight:800;color:var(--accent-400)">₹{{
+                    claim.payout_amount|floatformat:0 }}</span>
+            </div>
+        </div>
+
+        {% if claim.description %}
+        <div
+            style="margin-top:14px;padding:10px;background:var(--surface-3);border-radius:var(--r-sm);font-size:0.82rem">
+            <strong>Description:</strong><br>{{ claim.description }}
+        </div>
+        {% endif %}
+
+        {% if claim.fraud_score > 0 %}
+        <div
+            style="margin-top:14px;padding:10px;background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.15);border-radius:var(--r-sm);font-size:0.82rem">
+            <strong class="text-danger">🔍 Fraud Score: {{ claim.fraud_score|floatformat:0 }}/100</strong>
+            {% if claim.fraud_flags %}
+            <ul style="margin-top:6px;padding-left:14px;color:var(--text-400)">
+                {% for flag in claim.fraud_flags %}
+                <li>{{ flag }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if claim.disruption_event %}
+    <div class="card animate-in animate-delay-1">
+        <div class="card-header">
+            <h3 class="card-title">Linked Disruption Event</h3>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="flex-between"><span class="text-muted">Event</span><span class="font-bold">{{
+                    claim.disruption_event.title }}</span></div>
+            <div class="flex-between"><span class="text-muted">Severity</span>
+                {% if claim.disruption_event.severity == 'extreme' or claim.disruption_event.severity == 'severe' %}
+                <span class="badge badge-danger">{{ claim.disruption_event.get_severity_display }}</span>
+                {% elif claim.disruption_event.severity == 'high' %}
+                <span class="badge badge-warning">{{ claim.disruption_event.get_severity_display }}</span>
+                {% else %}
+                <span class="badge badge-info">{{ claim.disruption_event.get_severity_display }}</span>
+                {% endif %}
+            </div>
+            <div class="flex-between"><span class="text-muted">Measured Value</span><span>{{
+                    claim.disruption_event.measured_value }} {{ claim.disruption_event.trigger.threshold_unit }}</span>
+            </div>
+            <div class="flex-between"><span class="text-muted">Threshold</span><span>{{
+                    claim.disruption_event.trigger.threshold_value }} {{ claim.disruption_event.trigger.threshold_unit
+                    }}</span></div>
+            <div class="flex-between"><span class="text-muted">Data Source</span><span>{{
+                    claim.disruption_event.data_source }}</span></div>
+            <div class="flex-between"><span class="text-muted">Started</span><span>{{
+                    claim.disruption_event.event_start|date:"M d, Y h:i A" }}</span></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="margin-top:14px;text-align:center">
+        <a href="{% url 'claims_list' %}" class="btn btn-secondary">← Back to Claims</a>
+    </div>
+</div>
+{% endblock %}

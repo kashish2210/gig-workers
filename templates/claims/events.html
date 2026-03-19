@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Disruption Events{% endblock %}
+{% block page_title %}Disruption Events{% endblock %}
+
+{% block content %}
+<div class="card animate-in">
+    <div class="card-header">
+        <h3 class="card-title">⚡ Recent Disruption Events</h3>
+        <a href="{% url 'simulate_disruption' %}" class="btn btn-secondary btn-sm" id="btn-simulate">
+            <i data-lucide="zap"></i> Simulate
+        </a>
+    </div>
+
+    {% if events %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>City</th>
+                    <th>Severity</th>
+                    <th>Measured</th>
+                    <th>Source</th>
+                    <th>Auto Claims</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td class="font-bold">{{ event.title }}</td>
+                    <td>{{ event.city|title }}</td>
+                    <td>
+                        <span
+                            class="badge badge-{% if event.severity == 'extreme' or event.severity == 'severe' %}danger{% elif event.severity == 'high' %}warning{% else %}info{% endif %}">
+                            {{ event.get_severity_display }}
+                        </span>
+                    </td>
+                    <td class="text-mono">{{ event.measured_value }} {{ event.trigger.threshold_unit }}</td>
+                    <td style="font-size:0.8rem;">{{ event.data_source }}</td>
+                    <td>
+                        <span class="badge badge-success">{{ event.auto_claims_generated }}</span>
+                    </td>
+                    <td style="font-size:0.8rem;">{{ event.event_start|date:"M d, h:i A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="cloud-off"></i></div>
+        <h3>No Disruption Events</h3>
+        <p>No disruptions have been detected yet. Use the simulator to test the system.</p>
+        <a href="{% url 'simulate_disruption' %}" class="btn btn-primary" id="btn-go-simulate">Try Simulator</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

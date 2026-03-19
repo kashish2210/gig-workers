@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPI Strip -->
+<div class="stat-grid">
+    <div class="stat-card animate-in">
+        <div class="card-icon card-icon-primary"><i data-lucide="users"></i></div>
+        <div>
+            <div class="stat-value">{{ total_workers|intcomma }}</div>
+            <div class="stat-label">Registered Workers</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-1">
+        <div class="card-icon card-icon-accent"><i data-lucide="shield-check"></i></div>
+        <div>
+            <div class="stat-value" style="color:var(--accent-400)">{{ active_policies }}</div>
+            <div class="stat-label">Active Policies</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-2">
+        <div class="card-icon card-icon-info"><i data-lucide="file-text"></i></div>
+        <div>
+            <div class="stat-value">{{ total_claims }}</div>
+            <div class="stat-label">Total Claims</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-3">
+        <div class="card-icon card-icon-warning"><i data-lucide="trending-up"></i></div>
+        <div>
+            <div class="stat-value">{{ loss_ratio }}%</div>
+            <div class="stat-label">Loss Ratio</div>
+            <span class="stat-change {% if loss_ratio <= 70 %}positive{% else %}negative{% endif %}">
+                {% if loss_ratio <= 70 %}Healthy{% else %}Monitor{% endif %} </span>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue row -->
+<div class="grid-2 mb-4">
+    <div class="stat-card animate-in animate-delay-1">
+        <div class="card-icon card-icon-accent"><i data-lucide="banknote"></i></div>
+        <div>
+            <div class="stat-value" style="color:var(--accent-400)">₹{{ total_premiums|floatformat:0|intcomma }}</div>
+            <div class="stat-label">Total Premiums Collected</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-2">
+        <div class="card-icon card-icon-danger"><i data-lucide="arrow-up-right"></i></div>
+        <div>
+            <div class="stat-value" style="color:var(--danger-400)">₹{{ total_payouts|floatformat:0|intcomma }}</div>
+            <div class="stat-label">Total Payouts</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2 mb-4">
+    <!-- Claims Trend -->
+    <div class="card animate-in animate-delay-2">
+        <div class="card-header">
+            <h3 class="card-title">Claims Trend (30 days)</h3>
+        </div>
+        <div style="height:220px">
+            <canvas id="claimsTrendChart" data-trend='{{ claims_trend|safe }}'></canvas>
+        </div>
+    </div>
+
+    <!-- Claims by Type -->
+    <div class="card animate-in animate-delay-3">
+        <div class="card-header">
+            <h3 class="card-title">Claims by Disruption Type</h3>
+        </div>
+        <div style="height:220px">
+            {% if claims_by_type %}
+            <canvas id="claimsByTypeChart" data-types='{{ claims_by_type|safe }}'></canvas>
+            {% else %}
+            <div class="empty-state" style="padding:40px 0">
+                <p class="text-muted">No claims data yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Top Cities & Risk -->
+<div class="grid-2 mb-4">
+    <!-- Top Cities -->
+    <div class="card animate-in animate-delay-3">
+        <div class="card-header">
+            <h3 class="card-title">Top Cities by Claims</h3>
+        </div>
+        {% if top_cities %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Claims</th>
+                        <th>Total Payout</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city in top_cities %}
+                    <tr>
+                        <td style="font-weight:600">{{ city.claim_city|default:"Unknown"|title }}</td>
+                        <td>{{ city.count }}</td>
+                        <td>₹{{ city.total_payout|floatformat:0|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:24px 0">
+            <p class="text-muted">No claims data</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Risk Distribution -->
+    <div class="card animate-in animate-delay-4">
+        <div class="card-header">
+            <h3 class="card-title">Risk Distribution</h3>
+        </div>
+        {% if risk_dist %}
+        <div style="display:flex;flex-direction:column;gap:10px">
+            {% for item in risk_dist %}
+            <div>
+                <div class="flex-between mb-2">
+                    <span style="font-size:0.82rem;font-weight:600;text-transform:capitalize;color:var(--text-200)">{{
+                        item.risk_category }} Risk</span>
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--text-300)">{{ item.count }}
+                        workers</span>
+                </div>
+                <div class="factor-track" style="height:8px">
+                    <div class="factor-fill"
+                        style="width:100%;background:{% if item.risk_category == 'low' %}var(--success-400){% elif item.risk_category == 'medium' %}var(--warning-400){% else %}var(--danger-400){% endif %};opacity:0.7">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:24px 0">
+            <p class="text-muted">No workers registered yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Events -->
+<div class="card animate-in animate-delay-4">
+    <div class="card-header">
+        <h3 class="card-title">Recent Disruption Events</h3>
+        <a href="{% url 'disruption_events' %}" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    {% if recent_events %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>City</th>
+                    <th>Severity</th>
+                    <th>Measured</th>
+                    <th>Auto-Claims</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in recent_events %}
+                <tr>
+                    <td style="font-weight:600">{{ event.title }}</td>
+                    <td>{{ event.city }}</td>
+                    <td><span
+                            class="badge badge-{% if event.severity == 'extreme' or event.severity == 'severe' %}danger{% elif event.severity == 'high' %}warning{% else %}info{% endif %}">{{
+                            event.get_severity_display }}</span></td>
+                    <td class="text-mono" style="font-size:0.82rem">{{ event.measured_value|floatformat:1 }} {{
+                        event.measured_unit }}</td>
+                    <td>{{ event.auto_claims_generated }}</td>
+                    <td style="color:var(--text-400);font-size:0.8rem">{{ event.event_start|date:"M d, h:i A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding:24px 0">
+        <p class="text-muted">No disruption events yet</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        initCharts();
+    });
+</script>
+{% endblock %}

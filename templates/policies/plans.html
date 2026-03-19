@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Insurance Plans{% endblock %}
+{% block page_title %}Insurance Plans{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:20px">
+    <p class="text-muted">Choose a weekly plan that fits your needs. Premiums are dynamically priced based on your
+        profile.</p>
+</div>
+
+<div class="plan-grid">
+    {% for item in plan_data %}
+    {% with plan=item.plan calc=item.calc %}
+    <div
+        class="plan-card {% if plan.tier == 'standard' %}featured{% endif %} animate-in animate-delay-{{ forloop.counter }}">
+        {% if plan.tier == 'standard' %}
+        <div style="position:absolute;top:12px;right:12px">
+            <span class="badge badge-primary" style="font-size:0.6rem">Most Popular</span>
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom:4px">
+            <span
+                class="badge badge-{% if plan.tier == 'basic' %}info{% elif plan.tier == 'standard' %}primary{% else %}warning{% endif %}"
+                style="text-transform:capitalize">{{ plan.tier }}</span>
+        </div>
+
+        <div class="plan-name">{{ plan.name }}</div>
+        <p style="font-size:0.8rem;color:var(--text-400);margin-bottom:12px;line-height:1.5">{{ plan.description }}</p>
+
+        <div class="plan-price">
+            {% if calc %}
+            <span class="currency">₹</span>{{ calc.final_premium|floatformat:0 }}<span class="period">/week</span>
+            {% else %}
+            <span class="currency">₹</span>{{ plan.base_weekly_premium|floatformat:0 }}<span class="period">/week</span>
+            {% endif %}
+        </div>
+
+        {% if calc %}
+        <div style="font-size:0.7rem;color:var(--text-500);margin-bottom:12px">
+            Base ₹{{ plan.base_weekly_premium|floatformat:0 }} × {{ calc.combined_multiplier|floatformat:2 }}x
+            multiplier
+        </div>
+        {% endif %}
+
+        <ul class="plan-features">
+            <li>Up to ₹{{ plan.max_weekly_coverage|floatformat:0|intcomma }} weekly coverage</li>
+            <li>{{ plan.daily_income_coverage_pct }}% daily income covered</li>
+            <li>{{ plan.max_claim_days_per_week }} claim days per week</li>
+            <li>{{ plan.waiting_period_hours }}hr waiting period</li>
+            {% if plan.covers_weather %}<li>Weather disruptions</li>{% endif %}
+            {% if plan.covers_pollution %}<li>Pollution events</li>{% endif %}
+            {% if plan.covers_civil_unrest %}<li>Civil unrest</li>{% endif %}
+            {% if plan.covers_platform_outage %}<li>Platform outages</li>{% endif %}
+        </ul>
+
+        <a href="{% url 'purchase_policy' plan.id %}"
+            class="btn {% if plan.tier == 'standard' %}btn-primary{% else %}btn-secondary{% endif %} btn-block"
+            id="btn-select-{{ plan.tier }}">
+            Select {{ plan.name }}
+        </a>
+
+        {% if calc and calc.factors %}
+        <details style="margin-top:12px">
+            <summary style="font-size:0.73rem;color:var(--text-400);padding:4px 0">
+                View premium breakdown
+            </summary>
+            <div style="margin-top:8px">
+                {% for key, value in calc.factors.items %}
+                <div class="factor-bar">
+                    <span class="factor-label">{{ key }}</span>
+                    <div class="factor-track">
+                        <div class="factor-fill"
+                            style="width:{{ value|floatformat:0 }}%;background:{% if value > 110 %}var(--danger-400){% elif value > 100 %}var(--warning-400){% else %}var(--accent-400){% endif %}">
+                        </div>
+                    </div>
+                    <span class="factor-value">{{ value|floatformat:2 }}x</span>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+        {% endif %}
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% endblock %}

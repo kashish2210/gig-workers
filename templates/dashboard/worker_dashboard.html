@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPI Strip -->
+<div class="stat-grid">
+    <div class="stat-card animate-in">
+        <div class="card-icon card-icon-accent"><i data-lucide="shield-check"></i></div>
+        <div>
+            <div class="stat-value" style="color:var(--accent-400)">₹{{ weekly_protection|floatformat:0|intcomma }}
+            </div>
+            <div class="stat-label">Weekly Coverage</div>
+            {% if active_policy %}
+            <span class="badge badge-success mt-1">Active</span>
+            {% else %}
+            <span class="badge badge-warning mt-1">No Policy</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stat-card animate-in animate-delay-1">
+        <div class="card-icon card-icon-primary"><i data-lucide="banknote"></i></div>
+        <div>
+            <div class="stat-value">₹{{ total_protected|floatformat:0|intcomma }}</div>
+            <div class="stat-label">Total Protected</div>
+            <span class="stat-change positive">Lifetime</span>
+        </div>
+    </div>
+
+    <div class="stat-card animate-in animate-delay-2">
+        <div class="card-icon card-icon-info"><i data-lucide="file-text"></i></div>
+        <div>
+            <div class="stat-value">{{ approved_claims }}</div>
+            <div class="stat-label">Approved Claims</div>
+            <span style="font-size:0.67rem;color:var(--text-500)">of {{ total_claims_count }} total</span>
+        </div>
+    </div>
+
+    <div class="stat-card animate-in animate-delay-3">
+        <div class="card-icon card-icon-warning"><i data-lucide="gauge"></i></div>
+        <div>
+            <div class="stat-value">{{ profile.risk_score|floatformat:0 }}</div>
+            <div class="stat-label">Risk Score</div>
+            {% if profile.risk_category == 'low' %}
+            <span class="badge badge-success mt-1">Low</span>
+            {% elif profile.risk_category == 'medium' %}
+            <span class="badge badge-warning mt-1">Medium</span>
+            {% else %}
+            <span class="badge badge-danger mt-1">High</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Two-column: Policy + Weather -->
+<div class="grid-2 mb-4">
+    <!-- Active Policy -->
+    <div class="card animate-in animate-delay-1">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">Active Coverage</h3>
+                <p class="card-subtitle">Your current weekly insurance</p>
+            </div>
+            {% if not active_policy %}
+            <a href="{% url 'plans_list' %}" class="btn btn-primary btn-sm" id="btn-get-covered">Get Covered</a>
+            {% endif %}
+        </div>
+
+        {% if active_policy %}
+        <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="flex-between">
+                <span class="text-muted">Policy</span>
+                <span class="font-bold text-mono" style="font-size:0.82rem">{{ active_policy.policy_number }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Plan</span>
+                <span class="badge badge-primary">{{ active_policy.plan.name }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Period</span>
+                <span style="font-size:0.82rem">
+                    {{ active_policy.week_start|date:"M d" }}
+                    —
+                    {{ active_policy.week_end|date:"M d, Y" }}
+                </span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Premium</span>
+                <span class="font-bold">₹{{ active_policy.final_premium|floatformat:0 }}</span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Coverage</span>
+                <span class="font-bold" style="color:var(--accent-400)">
+                    ₹{{ active_policy.coverage_amount|floatformat:0 }}
+                </span>
+            </div>
+            <div class="flex-between">
+                <span class="text-muted">Claims Used</span>
+                <span>{{ active_policy.claims_made }} / {{ active_policy.plan.max_claim_days_per_week }}</span>
+            </div>
+            <div class="flex gap-2 mt-2">
+                <a href="{% url 'policy_detail' active_policy.id %}" class="btn btn-secondary btn-sm"
+                    id="btn-view-policy">Details</a>
+                <a href="{% url 'file_claim' %}" class="btn btn-accent btn-sm" id="btn-file-claim">File Claim</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:28px 0">
+            <div class="empty-state-icon"><i data-lucide="shield-off"></i></div>
+            <h3>No Active Coverage</h3>
+            <p>You're unprotected. Weekly plans start at just ₹49.</p>
+            <a href="{% url 'plans_list' %}" class="btn btn-primary btn-sm" id="btn-browse-plans">Browse Plans</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Weather & AQI -->
+    <div class="card animate-in animate-delay-2">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">Live Conditions — {{ profile.city|title }}</h3>
+                <p class="card-subtitle">{% if weather.status == 'live' %}Real-time{% else %}Simulated{% endif %} data
+                </p>
+            </div>
+        </div>
+
+        <div class="weather-widget" style="margin-bottom:12px">
+            <div>
+                <div class="weather-temp">{{ weather.temp_celsius|floatformat:0 }}<span class="unit">°C</span></div>
+                <span style="font-size:0.8rem;color:var(--text-400);text-transform:capitalize">
+                    {{ weather.description }}
+                </span>
+            </div>
+            <div class="weather-details">
+                <span>💧 {{ weather.humidity }}% humidity</span>
+                <span>💨 {{ weather.wind_speed }} m/s wind</span>
+                <span>🌧️ {{ weather.rain_1h_mm|floatformat:1 }} mm rain</span>
+                <span>👁️ {{ weather.visibility }}m vis</span>
+            </div>
+        </div>
+
+        <!-- AQI -->
+        <div
+            style="display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:var(--r-md);background:var(--surface-3);border:1px solid var(--border-1)">
+            <div style="font-size:1.6rem;font-weight:800;line-height:1;
+                {% if aqi.aqi > 300 %}color:var(--danger-400)
+                {% elif aqi.aqi > 200 %}color:var(--warning-400)
+                {% else %}color:var(--accent-400)
+                {% endif %}">
+                {{ aqi.aqi }}
+            </div>
+            <div>
+                <div style="font-size:0.82rem;font-weight:600;color:var(--text-200)">
+                    AQI: {{ aqi.category }}
+                </div>
+                <div style="font-size:0.67rem;color:var(--text-500)">
+                    PM2.5: {{ aqi.pm25 }} · PM10: {{ aqi.pm10 }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two-column: Claims + Events -->
+    <div class="grid-2">
+        <!-- Recent Claims -->
+        <div class="card animate-in animate-delay-3">
+            <div class="card-header">
+                <h3 class="card-title">Recent Claims</h3>
+                <a href="{% url 'claims_list' %}" class="btn btn-secondary btn-sm" id="btn-view-all-claims">View
+                    All</a>
+            </div>
+
+            {% if recent_claims %}
+            <div style="display:flex;flex-direction:column;gap:4px">
+                {% for claim in recent_claims %}
+                <a href="{% url 'claim_detail' claim.id %}" class="claim-row"
+                    style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:var(--r-sm);text-decoration:none;color:inherit;transition:background 120ms">
+                    <div style="display:flex;align-items:center;gap:9px">
+                        <span style="font-size:1rem">⚠️</span>
+                        <div>
+                            <div style="font-size:0.82rem;font-weight:600;color:var(--text-200)">
+                                {{ claim.get_disruption_type_display }}
+                            </div>
+                            <div style="font-size:0.67rem;color:var(--text-500)">
+                                {{ claim.claim_date|date:"M d, Y" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:0.82rem;font-weight:650;color:var(--text-100)">
+                            ₹{{ claim.payout_amount|floatformat:0 }}
+                        </div>
+                        {% if claim.status == 'approved' %}
+                        <span class="badge badge-success">Approved</span>
+                        {% elif claim.status == 'paid' %}
+                        <span class="badge badge-success">Paid</span>
+                        {% elif claim.status == 'pending' %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% elif claim.status == 'under_review' %}
+                        <span class="badge badge-warning">Under Review</span>
+                        {% elif claim.status == 'rejected' %}
+                        <span class="badge badge-danger">Rejected</span>
+                        {% elif claim.status == 'flagged' %}
+                        <span class="badge badge-danger">Flagged</span>
+                        {% else %}
+                        <span class="badge badge-info">{{ claim.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state" style="padding:20px 0">
+                <p class="text-muted">No claims filed yet. That's good news! 🎉</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Disruption Events -->
+        <div class="card animate-in animate-delay-4">
+            <div class="card-header">
+                <h3 class="card-title">Events in {{ profile.city|title }}</h3>
+                <a href="{% url 'disruption_events' %}" class="btn btn-secondary btn-sm" id="btn-view-events">View
+                    All</a>
+            </div>
+
+            {% if recent_events %}
+            <div style="display:flex;flex-direction:column;gap:4px">
+                {% for event in recent_events %}
+                <div style="padding:9px 10px;border-radius:var(--r-sm);background:var(--surface-raised)">
+                    <div class="flex-between">
+                        <span style="font-size:0.82rem;font-weight:600;color:var(--text-200)">{{ event.title
+                            }}</span>
+                        {% if event.severity == 'extreme' or event.severity == 'severe' %}
+                        <span class="badge badge-danger">{{ event.get_severity_display }}</span>
+                        {% elif event.severity == 'high' %}
+                        <span class="badge badge-warning">{{ event.get_severity_display }}</span>
+                        {% else %}
+                        <span class="badge badge-info">{{ event.get_severity_display }}</span>
+                        {% endif %}
+                    </div>
+                    <div style="font-size:0.67rem;color:var(--text-500);margin-top:3px">{{ event.event_start|date:"M
+                        d, h:i A" }} · {{ event.auto_claims_generated }} auto-claims</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state" style="padding:20px 0">
+                <p class="text-muted">No disruptions in your city recently. Clear skies! ☀️</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endblock %}

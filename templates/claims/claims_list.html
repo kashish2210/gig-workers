@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}My Claims{% endblock %}
+{% block page_title %}My Claims{% endblock %}
+
+{% block content %}
+<div class="stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+    <div class="stat-card animate-in">
+        <div class="card-icon card-icon-accent"><i data-lucide="banknote"></i></div>
+        <div>
+            <div class="stat-value text-accent">₹{{ total_claimed|floatformat:0|intcomma }}</div>
+            <div class="stat-label">Total Claimed</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-1">
+        <div class="card-icon card-icon-info"><i data-lucide="file-check"></i></div>
+        <div>
+            <div class="stat-value">{{ claims|length }}</div>
+            <div class="stat-label">Total Claims</div>
+        </div>
+    </div>
+    <div class="stat-card animate-in animate-delay-2">
+        <div class="card-icon card-icon-warning"><i data-lucide="clock"></i></div>
+        <div>
+            <div class="stat-value">{{ pending_claims }}</div>
+            <div class="stat-label">Pending Review</div>
+        </div>
+    </div>
+</div>
+
+<div class="card animate-in animate-delay-3">
+    <div class="card-header">
+        <h3 class="card-title">Claims History</h3>
+        <a href="{% url 'file_claim' %}" class="btn btn-primary btn-sm" id="btn-file-new-claim">
+            <i data-lucide="plus"></i> File Claim
+        </a>
+    </div>
+
+    {% if claims %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Claim #</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Initiated</th>
+                    <th>Income Loss</th>
+                    <th>Payout</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for claim in claims %}
+                <tr>
+                    <td class="text-mono font-bold">{{ claim.claim_number }}</td>
+                    <td>
+                        <span style="margin-right:4px;">
+                            {% if claim.disruption_type == 'heavy_rain' %}🌧️
+                            {% elif claim.disruption_type == 'extreme_heat' %}🌡️
+                            {% elif claim.disruption_type == 'severe_pollution' %}😷
+                            {% elif claim.disruption_type == 'flooding' %}🌊
+                            {% elif claim.disruption_type == 'cyclone' %}🌀
+                            {% else %}⚠️{% endif %}
+                        </span>
+                        {{ claim.get_disruption_type_display }}
+                    </td>
+                    <td>{{ claim.claim_date|date:"M d" }}</td>
+                    <td>
+                        <span
+                            class="badge badge-{% if claim.initiation_type == 'automatic' %}primary{% else %}info{% endif %}">
+                            {{ claim.get_initiation_type_display }}
+                        </span>
+                    </td>
+                    <td>₹{{ claim.estimated_income_loss|floatformat:0 }}</td>
+                    <td class="font-bold text-accent">₹{{ claim.payout_amount|floatformat:0 }}</td>
+                    <td>
+                        <span
+                            class="badge badge-{% if claim.status == 'approved' or claim.status == 'paid' %}success{% elif claim.status == 'pending' or claim.status == 'under_review' or claim.status == 'auto_initiated' %}warning{% elif claim.status == 'rejected' or claim.status == 'flagged' %}danger{% else %}info{% endif %}">
+                            {{ claim.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'claim_detail' claim.id %}" class="btn btn-secondary btn-sm">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="file-search"></i></div>
+        <h3>No Claims Yet</h3>
+        <p>When a disruption occurs in your area, claims are automatically triggered. You can also file manual claims.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Setup{% endblock %}
+{% block page_title %}Complete Your Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px;">
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">🛵 Delivery Worker Profile</h2>
+                <p class="card-subtitle">Tell us about your delivery work so we can calculate your personalized premium.
+                </p>
+            </div>
+        </div>
+
+        <form method="post" id="profile-setup-form">
+            {% csrf_token %}
+
+            <!-- Platform & Type -->
+            <div class="section-header mt-3">
+                <h3 class="section-title">Platform Details</h3>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_platform">Delivery Platform</label>
+                    {{ form.platform }}
+                    {{ form.platform.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_delivery_type">Delivery Category</label>
+                    {{ form.delivery_type }}
+                    {{ form.delivery_type.errors }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_vehicle_type">Vehicle Type</label>
+                    {{ form.vehicle_type }}
+                    {{ form.vehicle_type.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_platform_id">Platform Worker ID</label>
+                    {{ form.platform_id }}
+                    <span class="form-hint">Your ID on the delivery platform</span>
+                    {{ form.platform_id.errors }}
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="section-header mt-4">
+                <h3 class="section-title">📍 Delivery Location</h3>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_city">City</label>
+                    {{ form.city }}
+                    {{ form.city.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_zone">Delivery Zone</label>
+                    {{ form.zone }}
+                    {{ form.zone.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_pincode">Pincode</label>
+                {{ form.pincode }}
+                {{ form.pincode.errors }}
+            </div>
+
+            <!-- Earnings & Work -->
+            <div class="section-header mt-4">
+                <h3 class="section-title">💰 Earnings & Schedule</h3>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_avg_weekly_earnings">Avg Weekly Earnings (₹)</label>
+                    {{ form.avg_weekly_earnings }}
+                    <span class="form-hint">This helps us calculate your coverage amount</span>
+                    {{ form.avg_weekly_earnings.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_avg_daily_deliveries">Avg Daily Deliveries</label>
+                    {{ form.avg_daily_deliveries }}
+                    {{ form.avg_daily_deliveries.errors }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_avg_daily_hours">Avg Daily Hours</label>
+                    {{ form.avg_daily_hours }}
+                    {{ form.avg_daily_hours.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_preferred_shift">Preferred Shift</label>
+                    {{ form.preferred_shift }}
+                    {{ form.preferred_shift.errors }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="id_experience_months">Experience (Months)</label>
+                    {{ form.experience_months }}
+                    {{ form.experience_months.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="id_upi_id">UPI ID (for payouts)</label>
+                    {{ form.upi_id }}
+                    <span class="form-hint">e.g., yourname@paytm</span>
+                    {{ form.upi_id.errors }}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-save-profile">
+                    <i data-lucide="check-circle"></i>
+                    Complete Profile & Continue
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GigShield — AI-Powered Parametric Insurance for India's gig delivery workers.">
+    <title>{% block title %}GigShield{% endblock %} | AI Insurance for Gig Workers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    {% if user.is_authenticated %}
+    <!-- ===== SIDEBAR ===== -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+                <span class="logo-text">GigShield</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                <i data-lucide="panel-left-close"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <span class="nav-section-title">Main</span>
+                <a href="{% url 'dashboard' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                    id="nav-dashboard">
+                    <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+                </a>
+                {% if user.role == 'worker' %}
+                <a href="{% url 'plans_list' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'plans_list' %}active{% endif %}"
+                    id="nav-plans">
+                    <i data-lucide="shield-plus"></i><span>Insurance Plans</span>
+                </a>
+                <a href="{% url 'my_policies' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'my_policies' %}active{% endif %}"
+                    id="nav-policies">
+                    <i data-lucide="file-check"></i><span>My Policies</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">Claims</span>
+                <a href="{% url 'claims_list' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'claims_list' %}active{% endif %}"
+                    id="nav-claims">
+                    <i data-lucide="file-text"></i><span>My Claims</span>
+                </a>
+                {% if user.role == 'worker' %}
+                <a href="{% url 'file_claim' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'file_claim' %}active{% endif %}"
+                    id="nav-file-claim">
+                    <i data-lucide="plus-circle"></i><span>File a Claim</span>
+                </a>
+                {% endif %}
+                <a href="{% url 'disruption_events' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'disruption_events' %}active{% endif %}"
+                    id="nav-events">
+                    <i data-lucide="alert-triangle"></i><span>Disruption Events</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">Demo</span>
+                <a href="{% url 'simulate_disruption' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'simulate_disruption' %}active{% endif %}"
+                    id="nav-simulate">
+                    <i data-lucide="zap"></i><span>Simulate Disruption</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-title">Account</span>
+                <a href="{% url 'profile' %}"
+                    class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+                    id="nav-profile">
+                    <i data-lucide="user-circle"></i><span>Profile</span>
+                </a>
+                <a href="{% url 'logout' %}" class="nav-link" id="nav-logout">
+                    <i data-lucide="log-out"></i><span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ user.first_name|first }}{{ user.last_name|first }}</div>
+                <div class="user-info">
+                    <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                    <span class="user-role">{{ user.get_role_display }}</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content" id="mainContent">
+        <header class="topbar">
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Open menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="topbar-right">{% block topbar_right %}{% endblock %}</div>
+        </header>
+
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" id="msg-{{ forloop.counter }}">
+                <span>{{ message }}</span>
+                <button class="alert-close"
+                    onclick="this.parentElement.style.animation='alertOut 200ms forwards';setTimeout(()=>this.parentElement.remove(),200)">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% else %}
+    <!-- ===== PUBLIC (login/register) ===== -->
+    {% if messages %}
+    <div class="messages-container floating-messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <span>{{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% block public_content %}{% endblock %}
+    {% endif %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    <script>
+        lucide.createIcons();
+        // Auto-dismiss alerts
+        document.querySelectorAll('.alert').forEach(el => {
+            setTimeout(() => {
+                el.style.animation = 'alertOut 200ms forwards';
+                setTimeout(() => el.remove(), 250);
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>

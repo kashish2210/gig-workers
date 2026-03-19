@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px;">
+    <!-- Risk Profile Card -->
+    <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+        <div class="stat-card">
+            <div class="card-icon card-icon-primary"><i data-lucide="gauge"></i></div>
+            <div>
+                <div class="stat-value">{{ profile.risk_score|floatformat:0 }}</div>
+                <div class="stat-label">Risk Score</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div
+                class="card-icon card-icon-{% if profile.risk_category == 'low' %}accent{% elif profile.risk_category == 'medium' %}warning{% else %}danger{% endif %}">
+                <i data-lucide="shield"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="font-size:1.2rem;">{{ profile.get_risk_category_display }}</div>
+                <div class="stat-label">Risk Category</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="card-icon card-icon-accent"><i data-lucide="wallet"></i></div>
+            <div>
+                <div class="stat-value">₹{{ profile.avg_weekly_earnings|floatformat:0 }}</div>
+                <div class="stat-label">Weekly Earnings</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Edit Profile</h2>
+                <p class="card-subtitle">Update your delivery details to recalculate your premium.</p>
+            </div>
+        </div>
+
+        <form method="post" id="profile-edit-form">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Platform</label>
+                    {{ form.platform }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Delivery Type</label>
+                    {{ form.delivery_type }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">City</label>
+                    {{ form.city }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Zone</label>
+                    {{ form.zone }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Avg Weekly Earnings (₹)</label>
+                    {{ form.avg_weekly_earnings }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Preferred Shift</label>
+                    {{ form.preferred_shift }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Vehicle Type</label>
+                    {{ form.vehicle_type }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">UPI ID</label>
+                    {{ form.upi_id }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg mt-3" id="btn-update-profile">
+                <i data-lucide="save"></i>
+                Update Profile
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
