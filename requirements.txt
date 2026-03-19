@@ -1,5 +1,5 @@
-Django
-djangorestframewor
+Django>=5.0,<6.0
+djangorestframework
 django-cors-headers
 django-environ
 requests
@@ -9,4 +9,6 @@ scikit-learn
 Pillow
 whitenoise
 gunicorn
-jobli
+joblib
+psycopg2-binary
+dj-database-url
